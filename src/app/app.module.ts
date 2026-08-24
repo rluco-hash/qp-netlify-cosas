@@ -1,5 +1,5 @@
 import { registerLocaleData } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
+import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import localeEsCL from '@angular/common/locales/es-CL';
 import { LOCALE_ID, NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
@@ -11,10 +11,6 @@ import { AppComponent } from './app.component';
    Chile, va con punto (9.920). */
 registerLocaleData(localeEsCL);
 
-@NgModule({
-  declarations: [AppComponent],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule],
-  providers: [{ provide: LOCALE_ID, useValue: 'es-CL' }],
-  bootstrap: [AppComponent],
-})
+@NgModule({ declarations: [AppComponent],
+    bootstrap: [AppComponent], imports: [BrowserModule, AppRoutingModule], providers: [{ provide: LOCALE_ID, useValue: 'es-CL' }, provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule {}
