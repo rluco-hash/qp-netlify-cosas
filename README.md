@@ -154,10 +154,10 @@ To update Angular packages to compatible versions:
 ng update @angular/core @angular/cli
 ```
 
-For TypeScript compatibility issues, install a compatible version:
+Each Angular major version supports a specific TypeScript range, so update one major at a time and let `ng update` pin the matching compiler:
 
 ```bash
-npm install typescript@4.6.4 --save-dev
+ng update @angular/core@<next-major> @angular/cli@<next-major> @angular/build@<next-major>
 ```
 
 ## Testing
@@ -169,4 +169,4 @@ This project includes:
 
 ---
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15 and uses Angular 15.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) and currently runs on Angular 22.
