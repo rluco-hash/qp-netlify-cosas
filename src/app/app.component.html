@@ -1,7 +1,7 @@
 <!-- Formas de marca: puro adorno detras del contenido, nunca capturan el mouse. -->
 <div class="decor" aria-hidden="true">
   <!-- Las dos formas son assets de marca (src/assets/imgs): se referencian en
-       vez de inlinearse para que editar un SVG no obligue a tocar el template. -->
+  vez de inlinearse para que editar un SVG no obligue a tocar el template. -->
   <img class="decor__arc" src="assets/imgs/Semicirculo.svg" alt="" />
   <img class="decor__cross" src="assets/imgs/cruz_azul.svg" alt="" />
 </div>
@@ -24,23 +24,21 @@
       <span class="board__sep" aria-hidden="true">·</span>
       <span class="board__live">
         <span class="board__pulse" [class.board__pulse--error]="hasError" [class.board__pulse--idle]="isLoading"></span>
-        <ng-container *ngIf="hasError; else noError">
+        @if (hasError) {
           Sin conexión · reintentando
-        </ng-container>
-        <ng-template #noError>
-          <ng-container *ngIf="lastUpdated; else noLastUpdated">
+        } @else {
+          @if (lastUpdated) {
             Actualización en tiempo real · {{ lastUpdated | date: 'HH:mm' }}
-          </ng-container>
-          <ng-template #noLastUpdated>
+          } @else {
             Cargando ranking
-          </ng-template>
-        </ng-template>
+          }
+        }
       </span>
     </p>
   </header>
 
   <!-- Podio y lista comparten los mismos datos: el switch solo muestra u oculta
-       el podio, la lista siempre esta abajo. -->
+  el podio, la lista siempre esta abajo. -->
   <div class="switch" role="group" aria-label="Vista del ranking">
     <button type="button" class="switch__btn" [class.switch__btn--on]="view === 'podio'"
       [attr.aria-pressed]="view === 'podio'" (click)="setView('podio')">
@@ -54,131 +52,140 @@
     </button>
   </div>
 
-  <section class="podium" *ngIf="view === 'podio' && rows.length">
-    <article class="podium__place" *ngFor="let row of podiumRows; trackBy: trackByRow"
-      [ngClass]="'podium__place--' + row.position">
-      <span class="podium__medal" aria-hidden="true">{{ row.medal }}</span>
-      <p class="podium__name">{{ row.name }}</p>
-      <p class="podium__company" *ngIf="row.company">{{ row.company }}</p>
-      <p class="podium__score">
-        <span class="podium__points">{{ row.total | number: '1.0-0' }}</span>
-        <span class="unit">pts</span>
-      </p>
-    </article>
-  </section>
+  @if (view === 'podio' && rows.length) {
+    <section class="podium">
+      @for (row of podiumRows; track trackByRow($index, row)) {
+        <article class="podium__place"
+          [ngClass]="'podium__place--' + row.position">
+          <span class="podium__medal" aria-hidden="true">{{ row.medal }}</span>
+          <p class="podium__name">{{ row.name }}</p>
+          @if (row.company) {
+            <p class="podium__company">{{ row.company }}</p>
+          }
+          <p class="podium__score">
+            <span class="podium__points">{{ row.total | number: '1.0-0' }}</span>
+            <span class="unit">pts</span>
+          </p>
+        </article>
+      }
+    </section>
+  }
 
   <!-- Encabezado de columnas: ancla la lectura de la lista sin repetirse en cada
-       fila. Se pagina de a 10 para no imprimir cientos de filas de una. -->
-  <div class="board__cols" *ngIf="rows.length">
-    <span>Participante / Empresa</span>
-    <span>Puntaje</span>
-  </div>
+  fila. Se pagina de a 10 para no imprimir cientos de filas de una. -->
+  @if (rows.length) {
+    <div class="board__cols">
+      <span>Participante / Empresa</span>
+      <span>Puntaje</span>
+    </div>
+  }
 
   <ol class="board__list">
-    <ng-container *ngIf="rows.length; else emptyList">
-      <li class="entry" *ngFor="let row of pagedRows; let i = index; trackBy: trackByRow"
-        [class.entry--scored]="row.justScored" [ngClass]="row.medal ? 'entry--top entry--top-' + row.position : ''"
-        [style.--i]="i" [title]="breakdownOf(row)">
-        <span class="entry__rank">
-          <ng-container *ngIf="row.medal; else plainRank">
-            <span aria-hidden="true" class="entry__medal">{{ row.medal }}</span>
-            <span class="sr-only">Puesto {{ row.position }}</span>
-          </ng-container>
-          <ng-template #plainRank>#{{ row.position }}</ng-template>
-        </span>
-
-        <span class="entry__avatar" aria-hidden="true">{{ row.initials }}</span>
-
-        <div class="entry__identity">
-          <p class="entry__name">
-            <span class="entry__name-text">{{ row.name }}</span>
-            <ng-container [ngSwitch]="true">
-              <span *ngSwitchCase="row.delta > 0" class="entry__delta entry__delta--up"
-                title="Subió {{ row.delta }}">
-                ▲{{ row.delta }}
-              </span>
-              <span *ngSwitchCase="row.delta < 0" class="entry__delta entry__delta--down"
-                title="Bajó {{ -row.delta }}">
-                ▼{{ -row.delta }}
-              </span>
-              <span *ngSwitchCase="row.isNew" class="entry__delta entry__delta--new">nuevo</span>
-            </ng-container>
+    @if (rows.length) {
+      @for (row of pagedRows; track trackByRow(i, row); let i = $index) {
+        <li class="entry"
+          [class.entry--scored]="row.justScored" [ngClass]="row.medal ? 'entry--top entry--top-' + row.position : ''"
+          [style.--i]="i" [title]="breakdownOf(row)">
+          <span class="entry__rank">
+            @if (row.medal) {
+              <span aria-hidden="true" class="entry__medal">{{ row.medal }}</span>
+              <span class="sr-only">Puesto {{ row.position }}</span>
+            } @else {
+              #{{ row.position }}
+            }
+          </span>
+          <span class="entry__avatar" aria-hidden="true">{{ row.initials }}</span>
+          <div class="entry__identity">
+            <p class="entry__name">
+              <span class="entry__name-text">{{ row.name }}</span>
+              @switch (true) {
+                @case (row.delta > 0) {
+                  <span class="entry__delta entry__delta--up"
+                    title="Subió {{ row.delta }}">
+                    ▲{{ row.delta }}
+                  </span>
+                }
+                @case (row.delta < 0) {
+                  <span class="entry__delta entry__delta--down"
+                    title="Bajó {{ -row.delta }}">
+                    ▼{{ -row.delta }}
+                  </span>
+                }
+                @case (row.isNew) {
+                  <span class="entry__delta entry__delta--new">nuevo</span>
+                }
+              }
+            </p>
+            @if (row.company) {
+              <p class="entry__company">{{ row.company }}</p>
+            }
+          </div>
+          <p class="entry__score">
+            <span class="entry__points">{{ row.total | number: '1.0-0' }}</span>
+            <span class="unit">pts</span>
           </p>
-          <p class="entry__company" *ngIf="row.company">{{ row.company }}</p>
-        </div>
-
-        <p class="entry__score">
-          <span class="entry__points">{{ row.total | number: '1.0-0' }}</span>
-          <span class="unit">pts</span>
-        </p>
-      </li>
-    </ng-container>
-    <ng-template #emptyList>
+        </li>
+      }
+    } @else {
       <li class="board__empty">
-        <ng-container *ngIf="isLoading; else notLoading">
+        @if (isLoading) {
           Cargando participantes…
-        </ng-container>
-        <ng-template #notLoading>
+        } @else {
           Aún no hay participantes registrados.
-        </ng-template>
+        }
       </li>
-    </ng-template>
+    }
   </ol>
 
-  <nav class="pager" *ngIf="hasPages" aria-label="Paginación del ranking">
-    <button type="button" class="pager__btn" [disabled]="page === 0" (click)="goToPage(page - 1)"
-      aria-label="Página anterior">
-      <i class="fas fa-chevron-left" aria-hidden="true"></i>
-      Anterior
-    </button>
+  @if (hasPages) {
+    <nav class="pager" aria-label="Paginación del ranking">
+      <button type="button" class="pager__btn" [disabled]="page === 0" (click)="goToPage(page - 1)"
+        aria-label="Página anterior">
+        <i class="fas fa-chevron-left" aria-hidden="true"></i>
+        Anterior
+      </button>
+      <p class="pager__state" aria-live="polite">
+        Puestos {{ pageFrom }}–{{ pageTo }} de {{ rows.length | number: '1.0-0' }}
+        <span class="pager__page">Página {{ page + 1 }} de {{ totalPages }}</span>
+      </p>
+      <button type="button" class="pager__btn" [disabled]="page === totalPages - 1" (click)="goToPage(page + 1)"
+        aria-label="Página siguiente">
+        Siguiente
+        <i class="fas fa-chevron-right" aria-hidden="true"></i>
+      </button>
+    </nav>
+  }
 
-    <p class="pager__state" aria-live="polite">
-      Puestos {{ pageFrom }}–{{ pageTo }} de {{ rows.length | number: '1.0-0' }}
-      <span class="pager__page">Página {{ page + 1 }} de {{ totalPages }}</span>
-    </p>
-
-    <button type="button" class="pager__btn" [disabled]="page === totalPages - 1" (click)="goToPage(page + 1)"
-      aria-label="Página siguiente">
-      Siguiente
-      <i class="fas fa-chevron-right" aria-hidden="true"></i>
-    </button>
-  </nav>
-
-  <ng-container *ngIf="rows.length">
+  @if (rows.length) {
     <!-- Unico bloque oscuro de la pantalla: corta el scroll antes de los QR. -->
     <aside class="prize">
       <span class="prize__glow" aria-hidden="true"></span>
       <i class="fas fa-gift prize__gift" aria-hidden="true"></i>
-
       <p class="prize__badge">
         <span aria-hidden="true">🏆</span>
         Premio exclusivo
       </p>
-
       <h2 class="prize__title">
         <span class="prize__title-line prize__title-line--accent">¡5 Bolsas de Merch</span>
         <span class="prize__title-line">para tu Empresa! <span aria-hidden="true">🎁</span></span>
       </h2>
-
       <p class="prize__detail">
         Las <strong>5 empresas con el mayor puntaje</strong> al cierre del desafío se
         llevarán una bolsa cargada de productos para celebrar a su equipo.
       </p>
-
       <p class="prize__raffle">
         <i class="fas fa-calendar-day" aria-hidden="true"></i>
         Sorteo: {{ raffleDate }} por nuestro Instagram
       </p>
     </aside>
-
     <footer class="board__foot">
       <span>{{ rows.length | number: '1.0-0' }} participantes</span>
       <span>Actualización automática cada 1 minuto</span>
     </footer>
-  </ng-container>
+  }
 
   <!-- Redes: los QR son SVG estaticos (assets/qr), no dependen de ningun
-       servicio externo de imagenes. -->
+  servicio externo de imagenes. -->
   <section class="social">
     <div class="social__inner">
       <header class="social__head">
@@ -187,26 +194,31 @@
       </header>
 
       <div class="social__grid">
-        <a class="social__card" [ngClass]="'social__card--' + social.key"
-          *ngFor="let social of socials; trackBy: trackBySocial" [href]="social.url" target="_blank"
-          rel="noopener noreferrer">
-          <!-- El icono grande es el gancho: se reconoce la plataforma antes de
-               leer el nombre. Va fuera del QR para no tapar modulos. -->
-          <span class="social__badge" aria-hidden="true">
-            <img *ngIf="social.iconImg; else faIcon" class="social__badge-img" [src]="social.iconImg" alt="" />
-            <ng-template #faIcon><i [class]="social.icon"></i></ng-template>
-          </span>
-          <img class="social__qr" [src]="social.qr" [alt]="'Código QR de ' + social.label" width="128" height="128"
-            loading="lazy" />
-          <span class="social__name">{{ social.label }}</span>
-          <span class="social__detail">{{ social.detail }}</span>
-        </a>
+        @for (social of socials; track trackBySocial($index, social)) {
+          <a class="social__card" [ngClass]="'social__card--' + social.key"
+            [href]="social.url" target="_blank"
+            rel="noopener noreferrer">
+            <!-- El icono grande es el gancho: se reconoce la plataforma antes de
+            leer el nombre. Va fuera del QR para no tapar modulos. -->
+            <span class="social__badge" aria-hidden="true">
+              @if (social.iconImg) {
+                <img class="social__badge-img" [src]="social.iconImg" alt="" />
+              } @else {
+                <i [class]="social.icon"></i>
+              }
+            </span>
+            <img class="social__qr" [src]="social.qr" [alt]="'Código QR de ' + social.label" width="128" height="128"
+              loading="lazy" />
+            <span class="social__name">{{ social.label }}</span>
+            <span class="social__detail">{{ social.detail }}</span>
+          </a>
+        }
       </div>
     </div>
   </section>
 
   <!-- Boton flotante: acompana el scroll, por eso vive fuera de la seccion de
-       redes. En movil se reduce a solo el icono. -->
+  redes. En movil se reduce a solo el icono. -->
   <a class="chat" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer"
     aria-label="Chatea con nosotros por WhatsApp">
     <i class="fab fa-whatsapp" aria-hidden="true"></i>
