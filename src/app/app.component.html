@@ -80,8 +80,8 @@
     </div>
   }
 
-  <ol class="board__list">
-    @if (rows.length) {
+  @if (rows.length) {
+    <ol class="board__list">
       @for (row of pagedRows; track trackByRow(i, row); let i = $index) {
         <li class="entry"
           [class.entry--scored]="row.justScored" [ngClass]="row.medal ? 'entry--top entry--top-' + row.position : ''"
@@ -126,16 +126,67 @@
           </p>
         </li>
       }
-    } @else {
-      <li class="board__empty">
-        @if (isLoading) {
-          Cargando participantes…
-        } @else {
-          Aún no hay participantes registrados.
+    </ol>
+  } @else if (isLoading) {
+    <!-- Carga: el esqueleto repite la grilla de .entry para que la lista real
+    no llegue empujando la pantalla. Es decorativo; el aviso lo canta el p. -->
+    <div class="state state--loading">
+      <p class="state__loading" role="status" aria-live="polite">
+        <span class="state__spinner" aria-hidden="true"></span>
+        Cargando lista de participantes
+        <span class="state__dots" aria-hidden="true">
+          <i></i><i></i><i></i>
+        </span>
+      </p>
+
+      <ol class="ghosts" aria-hidden="true">
+        @for (ghost of skeletonRows; track $index) {
+          <li class="ghost" [style.--i]="$index">
+            <span class="ghost__block ghost__rank"></span>
+            <span class="ghost__block ghost__avatar"></span>
+            <span class="ghost__identity">
+              <span class="ghost__block ghost__name"></span>
+              <span class="ghost__block ghost__company"></span>
+            </span>
+            <span class="ghost__block ghost__score"></span>
+          </li>
         }
-      </li>
-    }
-  </ol>
+      </ol>
+    </div>
+  } @else if (hasError) {
+    <!-- Sin datos por caida del endpoint: no es lo mismo que "no hay nadie
+    inscrito" y no puede leerse igual. El poll sigue corriendo solo. -->
+    <div class="state state--error" role="status" aria-live="polite">
+      <span class="state__icon" aria-hidden="true">
+        <i class="fas fa-wifi"></i>
+      </span>
+      <h2 class="state__title">No pudimos traer el ranking</h2>
+      <p class="state__text">
+        La conexión con la planilla se cortó. Seguimos reintentando solos, no
+        hay que recargar nada.
+      </p>
+      <p class="state__hint">
+        <span class="state__pulse state__pulse--error" aria-hidden="true"></span>
+        Reintentando cada minuto
+      </p>
+    </div>
+  } @else {
+    <!-- Vacio real: hay conexion y la planilla no tiene participantes todavia. -->
+    <div class="state state--empty" role="status" aria-live="polite">
+      <span class="state__icon" aria-hidden="true">
+        <i class="fas fa-trophy"></i>
+      </span>
+      <h2 class="state__title">El podio está esperando</h2>
+      <p class="state__text">
+        Todavía nadie suma puntos. Apenas el primer equipo juegue, su nombre
+        aparece acá arriba.
+      </p>
+      <p class="state__hint">
+        <span class="state__pulse" aria-hidden="true"></span>
+        Se actualiza sola cada minuto
+      </p>
+    </div>
+  }
 
   @if (hasPages) {
     <nav class="pager" aria-label="Paginación del ranking">

@@ -720,13 +720,224 @@
   animation: entry-scored 1.8s ease-out;
 }
 
-/* ---------- Estados ---------- */
+/* ---------- Estados: carga, error y vacio ---------- */
 
-.board__empty {
-  padding: 4rem 1rem;
-  text-align: center;
+/* Los tres ocupan el lugar exacto de la lista. Antes los tres decian lo mismo
+   ("no hay participantes") y el error se leia como planilla vacia. */
+
+.state {
+  margin-top: 0.5rem;
+}
+
+/* -- Carga -- */
+
+.state__loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin: 0 0 1rem;
   font-size: 0.875rem;
+  font-weight: 600;
   color: var(--ink-soft);
+}
+
+.state__spinner {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  border: 2px solid rgba(65, 180, 228, 0.25);
+  border-top-color: var(--accent);
+  animation: state-spin 0.7s linear infinite;
+}
+
+/* Los puntos laten en cascada: sostienen la frase aunque el spinner quede
+   chico al lado del titulo. */
+.state__dots {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.state__dots i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: state-dot 1.2s ease-in-out infinite;
+}
+
+.state__dots i:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.state__dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+/* Esqueleto: copia la grilla, el alto y el radio de .entry, asi la lista real
+   entra en el mismo lugar en vez de empujar la pantalla. */
+.ghosts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.ghost {
+  display: grid;
+  grid-template-columns: 2.25rem 2.5rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: clamp(0.75rem, 2vw, 1.25rem);
+  padding: 0.85rem 1.15rem;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xl);
+  /* Se van apagando hacia abajo: la ultima fila insinua que la lista sigue. */
+  opacity: calc(1 - var(--i, 0) * 0.15);
+}
+
+/* Barrido de luz sobre los bloques, corrido una fila tras otra. */
+.ghost__block {
+  display: block;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(
+    90deg,
+    var(--theme-dark-50) 0%,
+    #f7f9fc 50%,
+    var(--theme-dark-50) 100%
+  );
+  background-size: 300% 100%;
+  animation: ghost-sweep 1.4s ease-in-out infinite;
+  animation-delay: calc(var(--i, 0) * 120ms);
+}
+
+.ghost__rank {
+  width: 1.25rem;
+  height: 0.75rem;
+  margin: 0 auto;
+}
+
+.ghost__avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+}
+
+.ghost__identity {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* Anchos distintos entre nombre y empresa: dos barras iguales se leen como
+   tabla rota, no como texto cargando. */
+.ghost__name {
+  width: min(58%, 11rem);
+  height: 0.75rem;
+}
+
+.ghost__company {
+  width: min(38%, 7rem);
+  height: 0.625rem;
+}
+
+.ghost__score {
+  width: 3.5rem;
+  height: 1.125rem;
+}
+
+/* -- Vacio y error -- */
+
+.state--empty,
+.state--error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: clamp(2rem, 5vw, 2.75rem) 1.5rem;
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xl);
+}
+
+/* Punteado y sin relleno propio: se lee como hueco por llenar. */
+.state--empty {
+  background: var(--band);
+  border-style: dashed;
+}
+
+/* El error toma el mismo ambar del punto de "Sin conexion" del encabezado. */
+.state--error {
+  background: rgba(250, 142, 4, 0.06);
+  border-color: rgba(250, 142, 4, 0.35);
+}
+
+.state__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  color: var(--accent-deep);
+  background: rgba(65, 180, 228, 0.12);
+}
+
+.state--error .state__icon {
+  color: var(--theme-warning);
+  background: rgba(250, 142, 4, 0.14);
+}
+
+.state__title {
+  margin: 1.25rem 0 0;
+  font-family: "Zalando Sans SemiExpanded", sans-serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.state__text {
+  /* En ch: el limite es cuantas palabras entran por renglon, no cuantos px. */
+  max-width: 38ch;
+  margin: 0.6rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-soft);
+}
+
+/* Pastilla de cierre: dice que la pantalla se arregla sola y que nadie tiene
+   que recargar. */
+.state__hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0 0;
+  padding: 0.45rem 0.9rem;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  /* El tracking ancho estira la pastilla: en pantallas chicas se parte en dos
+     renglones antes de tocar los bordes de la tarjeta. */
+  text-wrap: balance;
+  color: var(--theme-dark-400);
+}
+
+.state__pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: board-pulse 2s ease-in-out infinite;
+}
+
+.state__pulse--error {
+  background: var(--theme-warning);
 }
 
 /* ---------- Premio ---------- */
@@ -1083,6 +1294,34 @@
   }
 }
 
+@keyframes state-spin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes state-dot {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+/* El gradiente mide 300%: se mueve el fondo, no el elemento. */
+@keyframes ghost-sweep {
+  from {
+    background-position: 150% 0;
+  }
+  to {
+    background-position: -150% 0;
+  }
+}
+
 @keyframes entry-in {
   from {
     opacity: 0;
@@ -1107,10 +1346,16 @@
 /* ---------- Responsive ---------- */
 
 @media (max-width: 720px) {
-  .entry {
+  .entry,
+  .ghost {
     grid-template-columns: 1.75rem 2.25rem minmax(0, 1fr) auto;
     gap: 0.6rem;
     padding: 0.8rem 0.9rem;
+  }
+
+  .ghost__avatar {
+    width: 2.25rem;
+    height: 2.25rem;
   }
 
   .board__cols {
@@ -1163,8 +1408,17 @@
   .decor__arc,
   .decor__cross,
   .entry,
-  .entry--scored {
+  .entry--scored,
+  .state__spinner,
+  .state__dots i,
+  .state__pulse {
     animation: none;
+  }
+
+  /* Sin barrido queda el gradiente congelado a media pasada: se aplana. */
+  .ghost__block {
+    animation: none;
+    background: var(--theme-dark-50);
   }
 
   .chat,
