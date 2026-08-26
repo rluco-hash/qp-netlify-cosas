@@ -3,6 +3,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
   catchError,
+  from,
+  map,
   Observable,
   of,
   Subject,
@@ -11,13 +13,12 @@ import {
   timer,
 } from 'rxjs';
 
-/* Participantes falsos para QA de disenio: se usan o no segun la linea marcada
-   en fetchSheet(). El import puede quedar ahi en los dos casos; con la linea
-   comentada el bundler deja el JSON afuera (main.js pasa de ~130 a ~126 kB). */
-import * as MOCK_SHEET_DATA from './mock-sheet-data.json';
+import { environment } from '../environments/environment';
 
 interface SheetRow {
-  row_number: number;
+  /* Opcional a proposito: el Apps Script publicado hoy no lo manda. Cuando
+     falta, rank() arma el id con nombre + empresa (ver uniqueIdOf). */
+  row_number?: number;
   'Marca temporal': string;
   // 'Correo corporativo': string;
   'Nombre completo': string;
@@ -35,7 +36,9 @@ interface SheetResponse {
 
 /** Fila ya rankeada y comparada contra el poll anterior. */
 interface RankedRow {
-  id: number;
+  /* String y no el row_number crudo: es la unica clave que sobrevive a un poll
+     y sirve de track del @for, venga o no el numero de fila. */
+  id: string;
   position: number;
   name: string;
   company: string;
@@ -118,15 +121,15 @@ export class AppComponent {
     },
   ];
 
-  /* Vacio a proposito (ver DATOS DE PRUEBA en fetchSheet): mientras el mock
-     este activo esta URL no se usa. */
-  private readonly endpoint =''
+  /* Apps Script publicado como aplicacion web: devuelve { data, total } con
+     las filas del Sheet de inscripciones. La URL vive en environments/. */
+  private readonly endpoint = environment.sheetEndpoint;
   private readonly pollIntervalMs = 60000;
   private readonly destroy$ = new Subject<void>();
 
   /** Posicion y puntaje del poll anterior, para detectar movimientos. */
-  private previousPositions = new Map<number, number>();
-  private previousTotals = new Map<number, number>();
+  private previousPositions = new Map<string, number>();
+  private previousTotals = new Map<string, number>();
   private firstLoad = true;
 
   rows: RankedRow[] = [];
@@ -137,6 +140,10 @@ export class AppComponent {
   /** Participantes por pagina en el listado. */
   readonly pageSize = 10;
   page = 0;
+
+  /* Filas fantasma del esqueleto de carga: cinco alcanzan para que se lea como
+     lista sin ocupar la pantalla entera mientras responde el Apps Script. */
+  readonly skeletonRows = Array.from({ length: 5 });
 
   /* El podio y la lista muestran los mismos datos: 'lista' solo oculta el podio
      para dejar el ranking plano de corrido. */
@@ -168,23 +175,19 @@ export class AppComponent {
       });
   }
 
-  /* Fuente del poll.
+  /* Fuente del poll: el Apps Script, salvo que environment.useMockData este en
+     true, y ahi se responde con los 11 participantes falsos de
+     mock-sheet-data.json sin pegarle a ningun endpoint.
 
-     ==========================================================================
-     DATOS DE PRUEBA ACTIVOS: la pantalla se llena con los 11 participantes
-     falsos de mock-sheet-data.json y NO se le pega a ningun endpoint.
-
-     Para volver al endpoint real hay que hacer dos cosas:
-       1. comentar la linea marcada aca abajo (la del `of(MOCK_SHEET_DATA)`);
-       2. poner de vuelta la URL en `endpoint`, que hoy esta en ''.
-     Con solo el paso 1 la pantalla queda vacia y en "Sin conexion".
-     ========================================================================== */
+     El mock entra por import dinamico a proposito: con la bandera apagada el
+     JSON queda en un chunk aparte que el navegador nunca pide. */
   private fetchSheet(): Observable<SheetResponse | null> {
-    // >>> COMENTAR ESTA LINEA para usar el endpoint real <<<
-    return of(MOCK_SHEET_DATA as SheetResponse);
+    if (environment.useMockData) {
+      return from(import('./mock-sheet-data.json')).pipe(
+        map((mock) => mock.default as unknown as SheetResponse),
+      );
+    }
 
-    // Queda inalcanzable mientras la linea de arriba siga activa: es a proposito,
-    // asi el cambio de una fuente a la otra es comentar/descomentar y nada mas.
     return this._http
       .get<SheetResponse>(this.endpoint)
       .pipe(catchError(() => of(null)));
@@ -247,7 +250,7 @@ export class AppComponent {
     )}`;
   }
 
-  trackByRow(_index: number, row: RankedRow): number {
+  trackByRow(_index: number, row: RankedRow): string {
     return row.id;
   }
 
@@ -256,19 +259,28 @@ export class AppComponent {
   }
 
   private rank(data: SheetRow[]): RankedRow[] {
-    const ordered = [...data].sort(
-      (a, b) => (Number(b.Total) || 0) - (Number(a.Total) || 0),
+    /* Los ids se resuelven en el orden en que llega la planilla y no en el del
+       ranking: asi el desempate entre homonimos no baila cuando cambian los
+       puntajes. */
+    const taken = new Set<string>();
+    const identified = data.map((row) => ({
+      row,
+      id: this.uniqueIdOf(row, taken),
+    }));
+
+    const ordered = identified.sort(
+      (a, b) => (Number(b.row.Total) || 0) - (Number(a.row.Total) || 0),
     );
 
-    const ranked = ordered.map((row, index) => {
+    const ranked = ordered.map(({ row, id }, index) => {
       const position = index + 1;
       const company = (row['Nombre Empresa'] || '').trim();
       const total = Number(row.Total) || 0;
-      const previousPosition = this.previousPositions.get(row.row_number);
-      const previousTotal = this.previousTotals.get(row.row_number);
+      const previousPosition = this.previousPositions.get(id);
+      const previousTotal = this.previousTotals.get(id);
 
       return {
-        id: row.row_number,
+        id,
         position,
         name: (row['Nombre completo'] || '').trim() || 'Participante',
         company,
@@ -289,6 +301,33 @@ export class AppComponent {
     this.previousTotals = new Map(ranked.map((row) => [row.id, row.total]));
 
     return ranked;
+  }
+
+  /* Id estable entre polls: es lo que deja saber que este "Franco" es el mismo
+     de hace un minuto y, por lo tanto, cuantos puestos subio o bajo.
+     Con row_number alcanza; sin el, la identidad es nombre + empresa, y si dos
+     participantes comparten las dos cosas el segundo se lleva un sufijo para
+     que el track del @for no vea claves repetidas. */
+  private uniqueIdOf(row: SheetRow, taken: Set<string>): string {
+    const base =
+      row.row_number == null
+        ? `${(row['Nombre completo'] || '').trim().toLowerCase()}|${(
+            row['Nombre Empresa'] || ''
+          )
+            .trim()
+            .toLowerCase()}`
+        : `row-${row.row_number}`;
+
+    let id = base;
+    let duplicate = 2;
+
+    while (taken.has(id)) {
+      id = `${base}#${duplicate++}`;
+    }
+
+    taken.add(id);
+
+    return id;
   }
 
   private initialsOf(name: string): string {
