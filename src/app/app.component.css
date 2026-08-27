@@ -60,6 +60,13 @@
   /* Relleno de las filas del top 3: celeste de marca muy diluido. */
   --top-tint: rgba(65, 180, 228, 0.07);
 
+  /* Banda de redes fija al pie. El alto es un valor declarado, no medido: la
+     banda lo usa como minimo y el contenido de la pagina lo reserva como
+     padding, asi nada queda tapado detras de ella. Si cambia el layout de las
+     tarjetas, este numero se ajusta con el. */
+  --social-h: 8.5rem;
+  --qr-size: 5rem;
+
   position: relative;
   display: block;
   /* Las formas de adorno se salen del ancho a proposito; el recorte tambien
@@ -86,7 +93,8 @@
   position: relative;
   max-width: 1040px;
   margin: 0 auto;
-  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 2.5rem) 0;
+  padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 2.5rem)
+    calc(var(--social-h) + 2rem);
 }
 
 /* ---------- Formas de marca ---------- */
@@ -1049,26 +1057,54 @@
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--theme-dark-400);
+  padding-bottom: 3rem;
 }
 
 /* ---------- Redes y contacto ---------- */
 
-/* Banda de ancho completo: cierra la pagina. El margen negativo la saca del
-   contenedor centrado (el recorte del :host evita el scroll horizontal). El
-   padding inferior deja aire para el flotante de WhatsApp. */
+/* Banda fija al pie: los QR quedan a la vista con la pagina en cualquier
+   posicion de scroll (es una pantalla de evento, se escanea sin buscar). Al
+   salir del flujo ya no necesita el margen negativo para ganar ancho, y el
+   hueco que deja lo reserva el padding inferior de .board. */
 .social {
-  margin: 3rem calc(50% - 50vw) 0;
-  padding: 2.5rem clamp(1rem, 4vw, 2.5rem) 8rem;
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 800;
+  display: flex;
+  align-items: center;
+  min-height: var(--social-h);
+  padding: 1rem clamp(1rem, 4vw, 2.5rem);
   background: var(--band);
+  border-top: 1px solid var(--hairline);
+  /* La sombra hacia arriba es lo que separa la banda del contenido que pasa
+     por debajo al hacer scroll. */
+  box-shadow: 0 -8px 20px rgba(19, 54, 96, 0.08);
 }
 
+/* Los QR centrados en la pagina y el titulo a la izquierda. El titulo va
+   absoluto a proposito: como item de la fila (grid de tres columnas o flex con
+   spacer) su ancho corre el grupo de codigos y el centro deja de ser el centro
+   real de la banda. Fuera del flujo, el centrado sale por construccion y no por
+   compensar anchos. */
 .social__inner {
-  max-width: 1040px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  /* Mas ancho que los 1040px del contenido: el titulo se va contra el borde en
+     vez de pisar la primera tarjeta. */
+  max-width: 1240px;
   margin: 0 auto;
 }
 
 .social__head {
-  text-align: center;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  max-width: 13rem;
+  text-align: left;
 }
 
 .social__title {
@@ -1089,22 +1125,21 @@
   color: var(--ink-soft);
 }
 
-/* auto-fit con minimo de 12rem: tres columnas en desktop y una sola en movil
-   sin necesidad de otra media query. */
+/* Las tres tarjetas siempre en linea, en la columna del medio. */
 .social__grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
-  gap: 1rem;
-  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
 }
 
 .social__card {
+  flex: 0 1 auto;
+  min-width: 0;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1.25rem 1rem;
-  text-align: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.75rem;
+  text-align: left;
   text-decoration: none;
   background: var(--surface);
   border: 1px solid var(--hairline);
@@ -1126,10 +1161,11 @@
 /* Circulo con el logo de la plataforma: el elemento mas llamativo de la
    tarjeta. Cada red trae su propio color de marca. */
 .social__badge {
+  flex: none;
   display: grid;
   place-items: center;
-  width: 3.25rem;
-  height: 3.25rem;
+  width: 2.5rem;
+  height: 2.5rem;
   border-radius: 50%;
   color: #fff;
   background: var(--accent-deep);
@@ -1138,7 +1174,7 @@
 }
 
 .social__badge i {
-  font-size: 1.65rem;
+  font-size: 1.25rem;
   line-height: 1;
 }
 
@@ -1146,7 +1182,7 @@
    oscuro del badge, no se recolorea. */
 .social__badge-img {
   width: auto;
-  height: 1.9rem;
+  height: 1.5rem;
 }
 
 .social__card:hover .social__badge,
@@ -1164,12 +1200,33 @@
   box-shadow: 0 6px 14px rgba(10, 102, 194, 0.28);
 }
 
-/* El QR ya trae su propio margen blanco (quiet zone) dentro del SVG. */
+/* El QR ya trae su propio margen blanco (quiet zone) dentro del SVG. El lado
+   no baja de 4.5rem (72px): mas chico y la camara del telefono empieza a
+   fallar. */
 .social__qr {
-  width: 8rem;
-  height: 8rem;
+  flex: none;
+  width: var(--qr-size);
+  height: var(--qr-size);
   max-width: 100%;
   border-radius: var(--radius-sm);
+}
+
+/* Nombre y detalle son la unica parte flexible de la tarjeta: si falta ancho se
+   encogen antes que el QR. */
+.social__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+/* Una linea con puntos suspensivos: al angostarse la ventana el texto cede
+   ancho sin empujar la tarjeta ni ganar una segunda linea. */
+.social__name,
+.social__detail {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .social__name {
@@ -1189,12 +1246,13 @@
 /* ---------- Boton flotante de WhatsApp ---------- */
 
 /* Unico boton solido de la pantalla: es la unica accion que pedimos. Va fijo
-   abajo a la derecha, sobre el scroll. En reposo es solo el icono (circulo) y se
-   abre al hover; el ancho lo define el contenido, no una medida fija. */
+   abajo a la derecha, sobre el scroll, apoyado sobre la banda de redes (que
+   tambien es fija). En reposo es solo el icono (circulo) y se abre al hover; el
+   ancho lo define el contenido, no una medida fija. */
 .chat {
   position: fixed;
   right: clamp(1rem, 3vw, 2rem);
-  bottom: clamp(1rem, 3vw, 2rem);
+  bottom: calc(var(--social-h) + clamp(0.75rem, 2vw, 1.25rem));
   z-index: 900;
   display: inline-flex;
   align-items: center;
@@ -1345,6 +1403,15 @@
 
 /* ---------- Responsive ---------- */
 
+/* Debajo de 1300px el titulo ya no cabe al costado de las tres tarjetas
+   centradas: se pisarian. Gana la fila de QR, que es para lo que esta la banda;
+   el nombre de cada tarjeta ya dice a donde lleva cada codigo. */
+@media (max-width: 1300px) {
+  .social__head {
+    display: none;
+  }
+}
+
 @media (max-width: 720px) {
   .entry,
   .ghost {
@@ -1400,6 +1467,42 @@
      nombrandolo. */
   .chat__label {
     display: none;
+  }
+
+  /* La banda fija se lleva alto de viewport, que en movil es lo escaso: se queda
+     con lo justo para escanear. El titulo lo suple la camara del telefono (que
+     ya dice que hacer), el detalle de cada cuenta esta del otro lado del QR y el
+     badge cede el lugar al nombre, que identifica la red sin depender de
+     reconocer un icono de 28px. */
+  :host {
+    --qr-size: 4.5rem;
+  }
+
+  .social {
+    padding: 0.75rem;
+  }
+
+  .social__head,
+  .social__badge,
+  .social__detail {
+    display: none;
+  }
+
+  /* Los tres QR entran en linea solo con la tarjeta apilada: codigo arriba y
+     nombre como pie. */
+  .social__grid {
+    gap: 0.5rem;
+  }
+
+  .social__card {
+    flex-direction: column;
+    gap: 0.35rem;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .social__name {
+    font-size: 0.625rem;
   }
 }
 

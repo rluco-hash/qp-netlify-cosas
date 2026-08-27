@@ -235,39 +235,6 @@
     </footer>
   }
 
-  <!-- Redes: los QR son SVG estaticos (assets/qr), no dependen de ningun
-  servicio externo de imagenes. -->
-  <section class="social">
-    <div class="social__inner">
-      <header class="social__head">
-        <h2 class="social__title">Escanea y síguenos</h2>
-        <p class="social__lead">Apunta con la cámara de tu teléfono</p>
-      </header>
-
-      <div class="social__grid">
-        @for (social of socials; track trackBySocial($index, social)) {
-          <a class="social__card" [ngClass]="'social__card--' + social.key"
-            [href]="social.url" target="_blank"
-            rel="noopener noreferrer">
-            <!-- El icono grande es el gancho: se reconoce la plataforma antes de
-            leer el nombre. Va fuera del QR para no tapar modulos. -->
-            <span class="social__badge" aria-hidden="true">
-              @if (social.iconImg) {
-                <img class="social__badge-img" [src]="social.iconImg" alt="" />
-              } @else {
-                <i [class]="social.icon"></i>
-              }
-            </span>
-            <img class="social__qr" [src]="social.qr" [alt]="'Código QR de ' + social.label" width="128" height="128"
-              loading="lazy" />
-            <span class="social__name">{{ social.label }}</span>
-            <span class="social__detail">{{ social.detail }}</span>
-          </a>
-        }
-      </div>
-    </div>
-  </section>
-
   <!-- Boton flotante: acompana el scroll, por eso vive fuera de la seccion de
   redes. En movil se reduce a solo el icono. -->
   <a class="chat" [href]="whatsappUrl" target="_blank" rel="noopener noreferrer"
@@ -276,3 +243,34 @@
     <span class="chat__label">Chatea con nosotros</span>
   </a>
 </div>
+
+<!-- Redes: banda fija al pie (fuera de .board porque no participa del flujo
+de la pagina). Los QR son SVG estaticos (assets/qr), no dependen de ningun
+servicio externo de imagenes. -->
+<section class="social">
+  <div class="social__inner">
+    <div class="social__grid">
+      @for (social of socials; track trackBySocial($index, social)) {
+        <a class="social__card" [ngClass]="'social__card--' + social.key"
+          [href]="social.url" target="_blank"
+          rel="noopener noreferrer">
+          <!-- El icono grande es el gancho: se reconoce la plataforma antes de
+          leer el nombre. Va fuera del QR para no tapar modulos. -->
+          <span class="social__badge" aria-hidden="true">
+            @if (social.iconImg) {
+              <img class="social__badge-img" [src]="social.iconImg" alt="" />
+            } @else {
+              <i [class]="social.icon"></i>
+            }
+          </span>
+          <img class="social__qr" [src]="social.qr" [alt]="'Código QR de ' + social.label" width="128" height="128"
+            loading="lazy" />
+          <span class="social__text">
+            <span class="social__name">{{ social.label }}</span>
+            <span class="social__detail">{{ social.detail }}</span>
+          </span>
+        </a>
+      }
+    </div>
+  </div>
+</section>
