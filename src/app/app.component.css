@@ -116,49 +116,68 @@
   /* Alto visual al que arranca cada forma. Se quedan en la banda del titulo, que
      es lo unico que existe en las dos vistas: en "lista" no hay podio y todo
      sube, asi que cualquier forma mas abajo se come el listado. */
-  --arc-top: 7.5rem;
-  --cross-top: 0.25rem;
+  --confetti-right-top: 0.25rem;
+  --confetti-left-top: 0.25rem;
 }
 
 @media (min-width: 721px) {
   .decor {
     --decor-inset: 5vw;
-    --arc-top: 3.5rem;
-    --cross-top: 4rem;
+    --confetti-right-top: 1rem;
+    --confetti-left-top: 1rem;
   }
 }
 
-.decor__arc,
-.decor__cross {
+.decor__piece {
   position: absolute;
   display: block;
+  height: auto;
+  /* Adorno de fondo: apagado para que el rojo y el azul de los SVG no le
+     compitan al titulo. */
+  opacity: 0.75;
   /* Cada forma flota con su propio ritmo: en fase se leerian como un solo
-     bloque moviendose. */
-  animation: decor-float-arc 9s ease-in-out infinite;
+     bloque moviendose. El nombre lo pone cada pieza. */
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
   will-change: transform;
 }
 
-/* El asset es un arco horizontal (2:1) que abre hacia abajo; girado -90deg abre
-   hacia el contenido. Como el giro no cambia la caja de layout, width es el alto
-   VISUAL del semicirculo y el corrimiento del centro se compensa con
-   0.246 = (1 - 1 / 1.97) / 2, siendo 1.97 la proporcion del SVG. */
-.decor__arc {
-  --arc-size: clamp(5rem, 11vw, 8rem);
+/* Los colores (azul, rojo y blanco) vienen pintados dentro de cada SVG, no
+   hace falta tintarlos aca. */
 
-  top: calc(var(--arc-top) + var(--arc-size) * 0.246);
-  left: calc(var(--decor-inset) - var(--arc-size) * 0.246);
-  width: var(--arc-size);
-  height: auto;
+/* El fuego artificial es la pieza grande del motivo. Va fijo al pie izquierdo
+   del viewport (fuera de .decor, que recorta a la altura del titulo): ahi tiene
+   el hueco que dejo la banda de redes y no le pisa nada al confeti. Sin z-index
+   propio queda detras de .board, que es posicionado y viene despues en el DOM. */
+.decor__firework {
+  position: fixed;
+  left: clamp(0.25rem, 1.5vw, 1.5rem);
+  bottom: clamp(0.5rem, 2vw, 1.5rem);
+  width: clamp(7rem, 18vw, 15rem);
+  pointer-events: none;
+  animation-name: decor-float-firework;
+  animation-duration: 7s;
 }
 
-/* El celeste viene pintado dentro del propio SVG, no hace falta color aca. */
-.decor__cross {
-  top: var(--cross-top);
-  right: var(--decor-inset);
-  width: clamp(3.75rem, 8vw, 6.5rem);
-  height: auto;
-  animation-name: decor-float-cross;
-  animation-duration: 7s;
+/* Los dos confeti reparten el motivo a los costados del titulo en vez de dejarlo
+   todo en una esquina. */
+.decor__confetti--right {
+  top: var(--confetti-right-top);
+  right: calc(var(--decor-inset) - 1rem);
+  width: clamp(4.5rem, 12vw, 9.5rem);
+  animation-name: decor-float-confetti;
+  animation-duration: 8s;
+}
+
+/* El confeti de la izquierda va pegado al borde opuesto: entre los dos enmarcan
+   el titulo. */
+.decor__confetti--left {
+  top: var(--confetti-left-top);
+  left: calc(var(--decor-inset) - 1rem);
+  width: clamp(4rem, 11vw, 9rem);
+  animation-name: decor-float-confetti;
+  animation-duration: 10s;
+  animation-direction: reverse;
 }
 
 /* ---------- Cabecera ---------- */
@@ -181,6 +200,15 @@
   color: var(--accent-deep);
   background: rgba(65, 180, 228, 0.12);
   border-radius: 100px;
+}
+
+/* El lettering ya trae los colores de marca adentro (celeste, azul y blanco).
+   Ancho acotado: a ancho completo le robaba protagonismo al titulo. */
+.board__greeting {
+  display: block;
+  width: clamp(8rem, 26vw, 15rem);
+  height: auto;
+  margin: 0.75rem auto 0;
 }
 
 /* Una sola linea, con wrap solo como red de seguridad en pantallas muy
@@ -1330,25 +1358,25 @@
 
 /* Flotado de las formas: recorrido corto y lento, mas un giro minimo para que
    no se lea como un simple sube y baja. */
-/* El -90deg del arco es su giro de base, no parte del flotado: va en los dos
-   pasos para que la animacion no lo pise. */
-@keyframes decor-float-arc {
+@keyframes decor-float-firework {
   0%,
   100% {
-    transform: translate3d(0, 0, 0) rotate(-90deg);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(0.5rem, -1.5rem, 0) rotate(-95deg);
+    transform: translate3d(-0.75rem, 1rem, 0) scale(1.06);
   }
 }
 
-@keyframes decor-float-cross {
+/* El confeti cae y vuelve: el giro es mas marcado que en las otras formas
+   porque son papeles sueltos, no una figura solida. */
+@keyframes decor-float-confetti {
   0%,
   100% {
     transform: translate3d(0, 0, 0) rotate(0deg);
   }
   50% {
-    transform: translate3d(-0.75rem, 1.25rem, 0) rotate(9deg);
+    transform: translate3d(0.4rem, 1.5rem, 0) rotate(-12deg);
   }
 }
 
@@ -1435,20 +1463,24 @@
   }
 
   /* El tracking ancho del badge lo estiraba casi de borde a borde y lo dejaba
-     debajo de la cruz. */
+     debajo del fuego artificial. */
   .board__badge {
     font-size: 0.625rem;
     letter-spacing: 0.12em;
   }
 
-  /* Con el titulo en una linea el hueco del medio es lo que manda: las formas se
-     encogen y la cruz sube a la esquina, por encima del renglon del titulo. */
-  .decor__arc {
-    --arc-size: 5rem;
+  /* Sin hueco a los costados las formas se encogen y se pegan a los bordes, que
+     es lo unico que el titulo no ocupa. */
+  .decor__firework {
+    width: 6.5rem;
   }
 
-  .decor__cross {
-    width: 3.5rem;
+  .decor__confetti--right {
+    width: 3.75rem;
+  }
+
+  .decor__confetti--left {
+    width: 3.75rem;
   }
 
   /* Los dos botones arriba y el estado abajo: en una sola linea no caben y el
@@ -1508,8 +1540,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .board__pulse,
-  .decor__arc,
-  .decor__cross,
+  .decor__piece,
   .entry,
   .entry--scored,
   .state__spinner,
