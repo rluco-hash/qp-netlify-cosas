@@ -256,9 +256,12 @@ recortada a la altura del titulo. -->
   </a>
 </div>
 
-<!-- Redes: banda fija al pie (fuera de .board porque no participa del flujo
+<!-- DESACTIVADO: seccion de redes sociales. Se comenta porque por ahora no
+se muestra, pero se conserva para volver a habilitarla cuando se necesite.
+
+ Redes: banda fija al pie (fuera de .board porque no participa del flujo
 de la pagina). Los QR son SVG estaticos (assets/qr), no dependen de ningun
-servicio externo de imagenes. -->
+servicio externo de imagenes.
 <section class="social">
   <div class="social__inner">
     <div class="social__grid">
@@ -266,8 +269,8 @@ servicio externo de imagenes. -->
         <a class="social__card" [ngClass]="'social__card--' + social.key"
           [href]="social.url" target="_blank"
           rel="noopener noreferrer">
-          <!-- El icono grande es el gancho: se reconoce la plataforma antes de
-          leer el nombre. Va fuera del QR para no tapar modulos. -->
+           El icono grande es el gancho: se reconoce la plataforma antes de
+          leer el nombre. Va fuera del QR para no tapar modulos.
           <span class="social__badge" aria-hidden="true">
             @if (social.iconImg) {
               <img class="social__badge-img" [src]="social.iconImg" alt="" />
@@ -286,3 +289,4 @@ servicio externo de imagenes. -->
     </div>
   </div>
 </section>
+-->
