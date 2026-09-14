@@ -25,11 +25,17 @@ recortada a la altura del titulo. -->
     <img class="board__greeting" src="assets/imgs/felices_fiestas.svg"
       alt="Felices fiestas" />
 
-    <!-- Dos lineas y dos colores: el titulo es el bloque grafico de la pantalla. -->
-    <h1 class="board__title">
-      <span class="board__title-line">Fonda la</span>
-      <span class="board__title-line board__title-line--accent">cotizada</span>
-    </h1>
+    <!-- Dos lineas y dos colores: el titulo es el bloque grafico de la pantalla.
+    Las banderas van en una fila aparte y no dentro del h1: asi quedan centradas
+    contra el bloque entero aunque el titulo se parta en dos lineas. -->
+    <div class="board__title-row">
+      <img class="board__flag" src="assets/imgs/Bandera.svg" alt="" aria-hidden="true" />
+      <h1 class="board__title">
+        <span class="board__title-line">Fonda la</span>
+        <span class="board__title-line board__title-line--accent">cotizada</span>
+      </h1>
+      <img class="board__flag board__flag--right" src="assets/imgs/Bandera.svg" alt="" aria-hidden="true" />
+    </div>
 
     <p class="board__lead">
       <span>Top {{ pageSize }} participantes</span>

@@ -214,13 +214,37 @@
 /* Una sola linea, con wrap solo como red de seguridad en pantallas muy
    angostas. El tamano en movil lo manda el hueco que dejan las formas de marca
    a los costados, no el ancho del contenedor. */
+/* Fila del titulo: las banderas se centran contra el alto del h1, no contra sus
+   renglones, asi que no se mueven cuando el titulo pasa a dos lineas. El margen
+   superior se muda del h1 a la fila para que el centrado no lo cuente. */
+.board__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.4rem, 2vw, 1.25rem);
+  margin: 0.75rem 0 0;
+}
+
+/* Portrait (216x303): se mide por alto, que es lo que tiene que calzar con el
+   titulo. Un poco mas baja que el renglon para acompanarlo sin taparlo. */
+.board__flag {
+  flex: none;
+  width: auto;
+  height: clamp(1.75rem, 4.5vw, 3.25rem);
+}
+
+/* Espejada: las dos miran hacia el titulo en vez de apuntar para el mismo lado. */
+.board__flag--right {
+  transform: scaleX(-1);
+}
+
 .board__title {
   display: flex;
   align-items: baseline;
   justify-content: center;
   flex-wrap: wrap;
   gap: 0 0.3em;
-  margin: 0.75rem 0 0;
+  margin: 0;
   font-family: "Zalando Sans SemiExpanded", sans-serif;
   font-size: clamp(1.5rem, 4.5vw, 3rem);
   font-weight: 800;
