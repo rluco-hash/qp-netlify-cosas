@@ -257,6 +257,18 @@
   color: var(--accent);
 }
 
+/* El logotipo reemplaza al titulo en texto: ya trae lettering, bandera, fuegos
+   y ano compuestos, por eso se mide contra el ancho de la pantalla y no contra
+   el cuerpo de letra. El margen superior es el que antes llevaba la fila de
+   banderas. Tope en rem para que en escritorio no crezca mas que el tablero. */
+.board__logo {
+  display: block;
+  width: clamp(12rem, 52vw, 24rem);
+  max-width: 100%;
+  height: auto;
+  margin-top: 0.75rem;
+}
+
 .board__lead {
   display: flex;
   align-items: center;

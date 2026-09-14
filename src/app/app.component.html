@@ -20,14 +20,13 @@ recortada a la altura del titulo. -->
       Desafío QuePlan 2026
     </p> -->
 
-    <!-- Lettering de fiestas patrias: entra entre el badge y el titulo. Es texto
-    dibujado, por eso lleva alt y no aria-hidden como el resto del motivo. -->
+    <!-- DESACTIVADO: el lettering suelto de "Felices fiestas" y las banderas a los
+    costados ya vienen dibujados dentro del logotipo, repetirlos duplicaba el
+    mensaje. Se conservan por si se vuelve al titulo en texto.
+
     <img class="board__greeting" src="assets/imgs/felices_fiestas.svg"
       alt="Felices fiestas" />
 
-    <!-- Dos lineas y dos colores: el titulo es el bloque grafico de la pantalla.
-    Las banderas van en una fila aparte y no dentro del h1: asi quedan centradas
-    contra el bloque entero aunque el titulo se parta en dos lineas. -->
     <div class="board__title-row">
       <img class="board__flag" src="assets/imgs/Bandera.svg" alt="" aria-hidden="true" />
       <h1 class="board__title">
@@ -36,6 +35,15 @@ recortada a la altura del titulo. -->
       </h1>
       <img class="board__flag board__flag--right" src="assets/imgs/Bandera.svg" alt="" aria-hidden="true" />
     </div>
+    -->
+
+    <!-- El titulo es el logotipo, no texto: trae el lettering, la bandera, los
+    fuegos y el ano ya compuestos. Sigue dentro del h1 para que la pantalla
+    conserve su encabezado; el alt carga lo que el dibujo dice. -->
+    <h1 class="board__title">
+      <img class="board__logo" src="assets/imgs/Logotipo_fonda.svg"
+        alt="QuePlan.cl · Fonda la cotizada · Felices fiestas 2026" />
+    </h1>
 
     <p class="board__lead">
       <span>Top {{ pageSize }} participantes</span>
