@@ -101,7 +101,7 @@ recortada a la altura del titulo. -->
   fila. Se pagina de a 10 para no imprimir cientos de filas de una. -->
   @if (rows.length) {
     <div class="board__cols">
-      <span>Participante / Empresa</span>
+      <span>Participante / Cargo y empresa</span>
       <span>Puntaje</span>
     </div>
   }
@@ -142,8 +142,8 @@ recortada a la altura del titulo. -->
                 }
               }
             </p>
-            @if (row.company) {
-              <p class="entry__company">{{ row.company }}</p>
+            @if (row.subtitle) {
+              <p class="entry__company">{{ row.subtitle }}</p>
             }
           </div>
           <p class="entry__score">

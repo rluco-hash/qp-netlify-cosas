@@ -16,17 +16,27 @@ import {
 import { environment } from '../environments/environment';
 
 interface SheetRow {
-  /* Opcional a proposito: el Apps Script publicado hoy no lo manda. Cuando
-     falta, rank() arma el id con nombre + empresa (ver uniqueIdOf). */
+  /* Opcional a proposito: el backend de hoy no lo manda. Cuando falta, rank()
+     arma el id con nombre + empresa (ver uniqueIdOf). */
   row_number?: number;
   'Marca temporal': string;
-  // 'Correo corporativo': string;
   'Nombre completo': string;
   Cargo: string;
   'Puntaje Dados': number;
-  'Puntaje Raspe': number;
+  /* Ojo: hasta la version anterior del backend este campo se llamaba
+     'Puntaje Raspe'. Si vuelve a cambiar de nombre el puntaje se lee como 0 y
+     el ranking queda ordenado solo por los dados, sin ningun error visible. */
+  'Puntaje Ruleta': number;
   'Nombre Empresa': string;
   Total: number;
+
+  /* Columnas que la planilla manda pero el ranking no muestra: son datos de
+     contacto y de gestion de la campania. Van opcionales porque el backend las
+     agrego despues y no hay garantia de que sigan viniendo. */
+  'Teléfono'?: string;
+  Desuscrito?: string;
+  Rebote?: string;
+  Cluster?: string;
 }
 
 interface SheetResponse {
@@ -41,12 +51,16 @@ interface RankedRow {
   id: string;
   position: number;
   name: string;
+  /** Cargo declarado en la inscripcion; puede venir vacio. */
+  role: string;
   company: string;
+  /** Cargo y empresa en una linea, que es como los muestra el listado. */
+  subtitle: string;
   initials: string;
   /** Medalla del puesto (vacia del cuarto en adelante). */
   medal: string;
   dados: number;
-  raspe: number;
+  ruleta: number;
   total: number;
   /** Puestos ganados desde el poll anterior (negativo = perdidos). */
   delta: number;
@@ -188,8 +202,11 @@ export class AppComponent {
       );
     }
 
+    /* El parametro sirve solo para que la URL cambie en cada poll: sin el, el
+       CDN delante del backend respondia el ranking cacheado (cf-cache-status
+       HIT) y la pantalla se quedaba varios minutos con puntajes viejos. */
     return this._http
-      .get<SheetResponse>(this.endpoint)
+      .get<SheetResponse>(this.endpoint, { params: { _: Date.now() } })
       .pipe(catchError(() => of(null)));
   }
 
@@ -235,9 +252,11 @@ export class AppComponent {
   /* El desglose ya no ocupa lugar en la fila (el disenio la deja limpia): vive
      en el title, a un hover de distancia. */
   breakdownOf(row: RankedRow): string {
-    return `Dados ${row.dados.toLocaleString('es-CL')} · Raspe ${row.raspe.toLocaleString(
+    const puntajes = `Dados ${row.dados.toLocaleString('es-CL')} · Ruleta ${row.ruleta.toLocaleString(
       'es-CL',
     )}`;
+
+    return row.role ? `${row.role} — ${puntajes}` : puntajes;
   }
 
   goToPage(page: number): void {
@@ -269,13 +288,16 @@ export class AppComponent {
     }));
 
     const ordered = identified.sort(
-      (a, b) => (Number(b.row.Total) || 0) - (Number(a.row.Total) || 0),
+      (a, b) => AppComponent.totalOf(b.row) - AppComponent.totalOf(a.row),
     );
 
     const ranked = ordered.map(({ row, id }, index) => {
       const position = index + 1;
+      const role = (row.Cargo || '').trim();
       const company = (row['Nombre Empresa'] || '').trim();
-      const total = Number(row.Total) || 0;
+      const dados = Number(row['Puntaje Dados']) || 0;
+      const ruleta = Number(row['Puntaje Ruleta']) || 0;
+      const total = AppComponent.totalOf(row, dados, ruleta);
       const previousPosition = this.previousPositions.get(id);
       const previousTotal = this.previousTotals.get(id);
 
@@ -283,11 +305,13 @@ export class AppComponent {
         id,
         position,
         name: (row['Nombre completo'] || '').trim() || 'Participante',
+        role,
         company,
+        subtitle: [role, company].filter(Boolean).join(' · '),
         initials: this.initialsOf(row['Nombre completo']),
         medal: AppComponent.medals[position] ?? '',
-        dados: Number(row['Puntaje Dados']) || 0,
-        raspe: Number(row['Puntaje Raspe']) || 0,
+        dados,
+        ruleta,
         total,
         delta: previousPosition === undefined ? 0 : previousPosition - position,
         isNew: !this.firstLoad && previousPosition === undefined,
@@ -328,6 +352,19 @@ export class AppComponent {
     taken.add(id);
 
     return id;
+  }
+
+  /* El backend manda Total ya sumado, pero el ranking no depende de eso: si la
+     columna llega vacia o en cero con puntajes cargados, se suman los dos
+     juegos. Asi un Total que no se actualizo no manda a nadie al ultimo puesto. */
+  private static totalOf(
+    row: SheetRow,
+    dados = Number(row['Puntaje Dados']) || 0,
+    ruleta = Number(row['Puntaje Ruleta']) || 0,
+  ): number {
+    const total = Number(row.Total);
+
+    return Number.isFinite(total) && total > 0 ? total : dados + ruleta;
   }
 
   private initialsOf(name: string): string {

@@ -2,125 +2,147 @@
   "total": 11,
   "data": [
     {
-      "row_number": 2,
       "Marca temporal": "2025-08-11 09:14:22",
-      "Correo corporativo": "cvaldes@andesmutual.cl",
       "Nombre completo": "Camila Valdés Rojas",
       "Cargo": "Jefa de Personas",
       "Puntaje Dados": 480,
-      "Puntaje Raspe": 260,
+      "Puntaje Ruleta": 260,
       "Nombre Empresa": "Andes Mutual",
-      "Total": 740
+      "Teléfono": "",
+      "Total": 740,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 3,
       "Marca temporal": "2025-08-11 10:02:47",
-      "Correo corporativo": "jmunoz@constructoralaraucana.cl",
       "Nombre completo": "Joaquín Muñoz Herrera",
       "Cargo": "Gerente de Operaciones",
       "Puntaje Dados": 300,
-      "Puntaje Raspe": 150,
+      "Puntaje Ruleta": 150,
       "Nombre Empresa": "Constructora La Araucana",
-      "Total": 450
+      "Teléfono": "",
+      "Total": 450,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 4,
       "Marca temporal": "2025-08-11 11:38:05",
-      "Correo corporativo": "mfernandez@retailpacifico.cl",
       "Nombre completo": "María José Fernández Silva",
       "Cargo": "Subgerenta de Bienestar",
       "Puntaje Dados": 620,
-      "Puntaje Raspe": 310,
+      "Puntaje Ruleta": 310,
       "Nombre Empresa": "Retail Pacífico",
-      "Total": 930
+      "Teléfono": "",
+      "Total": 930,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 5,
       "Marca temporal": "2025-08-12 08:55:19",
-      "Correo corporativo": "rcastro@logisticadelsur.cl",
       "Nombre completo": "Rodrigo Castro Peña",
       "Cargo": "Analista de RRHH",
       "Puntaje Dados": 210,
-      "Puntaje Raspe": 95,
+      "Puntaje Ruleta": 95,
       "Nombre Empresa": "Logística del Sur",
-      "Total": 305
+      "Teléfono": "",
+      "Total": 305,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 6,
       "Marca temporal": "2025-08-12 12:21:40",
-      "Correo corporativo": "adiaz@clinicalosandes.cl",
       "Nombre completo": "Antonia Díaz Contreras",
       "Cargo": "Coordinadora de Beneficios",
       "Puntaje Dados": 540,
-      "Puntaje Raspe": 205,
+      "Puntaje Ruleta": 205,
       "Nombre Empresa": "Clínica Los Andes",
-      "Total": 745
+      "Teléfono": "",
+      "Total": 745,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 7,
       "Marca temporal": "2025-08-13 09:47:11",
-      "Correo corporativo": "fsoto@viñaaltocarmen.cl",
       "Nombre completo": "Felipe Soto Aravena",
       "Cargo": "Jefe de Administración",
       "Puntaje Dados": 180,
-      "Puntaje Raspe": 60,
+      "Puntaje Ruleta": 60,
       "Nombre Empresa": "Viña Alto Carmen",
-      "Total": 240
+      "Teléfono": "",
+      "Total": 240,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 8,
       "Marca temporal": "2025-08-13 15:09:33",
-      "Correo corporativo": "vlagos@techqueltehue.cl",
       "Nombre completo": "Valentina Lagos Bustos",
       "Cargo": "People Manager",
       "Puntaje Dados": 700,
-      "Puntaje Raspe": 420,
+      "Puntaje Ruleta": 420,
       "Nombre Empresa": "Tech Queltehue",
-      "Total": 1120
+      "Teléfono": "",
+      "Total": 1120,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 9,
       "Marca temporal": "2025-08-14 10:16:58",
-      "Correo corporativo": "iparedes@mineracordillera.cl",
       "Nombre completo": "Ignacio Paredes Vera",
       "Cargo": "Encargado de Prevención",
       "Puntaje Dados": 390,
-      "Puntaje Raspe": 175,
+      "Puntaje Ruleta": 175,
       "Nombre Empresa": "Minera Cordillera",
-      "Total": 565
+      "Teléfono": "",
+      "Total": 565,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 10,
       "Marca temporal": "2025-08-14 16:44:02",
-      "Correo corporativo": "ptapia@alimentosmaipo.cl",
       "Nombre completo": "Paulina Tapia Godoy",
       "Cargo": "Directora de Cultura",
       "Puntaje Dados": 260,
-      "Puntaje Raspe": 140,
+      "Puntaje Ruleta": 140,
       "Nombre Empresa": "Alimentos Maipo",
-      "Total": 400
+      "Teléfono": "",
+      "Total": 400,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 11,
       "Marca temporal": "2025-08-15 09:03:27",
-      "Correo corporativo": "sbravo@seguroshorizonte.cl",
       "Nombre completo": "Sebastián Bravo Miranda",
       "Cargo": "Jefe de Compensaciones",
       "Puntaje Dados": 320,
-      "Puntaje Raspe": 130,
+      "Puntaje Ruleta": 130,
       "Nombre Empresa": "Seguros Horizonte",
-      "Total": 450
+      "Teléfono": "",
+      "Total": 450,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     },
     {
-      "row_number": 12,
       "Marca temporal": "2025-08-15 13:52:14",
-      "Correo corporativo": "mnavarro@transportesbiobio.cl",
       "Nombre completo": "Martina Navarro Espinoza",
       "Cargo": "Asistente de Personas",
       "Puntaje Dados": 90,
-      "Puntaje Raspe": 45,
+      "Puntaje Ruleta": 45,
       "Nombre Empresa": "Transportes Biobío",
-      "Total": 135
+      "Teléfono": "",
+      "Total": 135,
+      "Desuscrito": "",
+      "Rebote": "",
+      "Cluster": ""
     }
   ]
 }
