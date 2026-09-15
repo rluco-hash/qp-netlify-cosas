@@ -1,0 +1,10 @@
+{
+  "/api": {
+    "target": "https://leaderboard-back.queplan.cl",
+    "secure": true,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/api": ""
+    }
+  }
+}

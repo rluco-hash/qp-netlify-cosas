@@ -1,9 +1,11 @@
 export const environment = {
   production: true,
 
-  /* Ver la nota de environment.ts: es la misma URL, aparte para poder apuntar
-     produccion a otra implementacion del Apps Script sin tocar el dev. */
-  sheetEndpoint: 'https://app-sample-e8c098cfc70b.herokuapp.com/leaderboard',
+  /* Ruta relativa a proposito: en produccion la llamada la proxea Netlify
+     (ver el redirect /api/* de netlify.toml) igual que el proxy de ng serve en
+     dev, porque el backend no devuelve Access-Control-Allow-Origin. Si algun
+     dia se apunta a otro backend, revisar el redirect y no solo esta linea. */
+  sheetEndpoint: '/api/leaderboard',
 
   /* En produccion nunca se muestran participantes falsos. */
   useMockData: false,

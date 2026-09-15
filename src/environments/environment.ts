@@ -5,11 +5,12 @@
 export const environment = {
   production: false,
 
-  /* URL /exec del Apps Script publicado como aplicacion web con acceso
-     "Cualquier persona". Cada implementacion nueva genera un ID distinto: si el
-     ranking queda en "Sin conexion", lo primero es revisar que esta URL sea la
-     de la ultima implementacion. */
-  sheetEndpoint: 'https://app-sample-e8c098cfc70b.herokuapp.com/leaderboard',
+  /* En dev se le pega al backend a traves del proxy de ng serve
+     (proxy.conf.json: /api -> https://leaderboard-back.queplan.cl), porque el
+     backend no devuelve Access-Control-Allow-Origin y el navegador corta la
+     llamada directa por CORS. El proxy hace la peticion desde el servidor de
+     desarrollo, asi que para el navegador queda como same-origin. */
+  sheetEndpoint: '/api/leaderboard',
 
   /* true = la pantalla se llena con los participantes falsos de
      mock-sheet-data.json y no se le pega a sheetEndpoint. Sirve para QA de

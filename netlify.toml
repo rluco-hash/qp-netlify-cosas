@@ -2,6 +2,20 @@
   command="ng build"
   publish="dist/angular-quickstart/browser"
 
+# Proxy al backend del ranking. Va ANTES del fallback de la SPA porque Netlify
+# aplica la primera regla que matchea: si /* quedara arriba, /api/leaderboard
+# devolveria el index.html y el ranking leeria HTML donde espera JSON.
+#
+# Existe porque leaderboard-back.queplan.cl no manda Access-Control-Allow-Origin
+# y el navegador corta la llamada por CORS. Al pasar por el CDN, la peticion
+# sale del lado del servidor y para el navegador queda same-origin. Cuando el
+# backend arregle CORS esto se puede borrar y volver a la URL absoluta.
+[[redirects]]
+  from = "/api/*"
+  to = "https://leaderboard-back.queplan.cl/:splat"
+  status = 200
+  force = true
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
