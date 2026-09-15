@@ -5,12 +5,12 @@
 export const environment = {
   production: false,
 
-  /* En dev se le pega al backend a traves del proxy de ng serve
-     (proxy.conf.json: /api -> https://leaderboard-back.queplan.cl), porque el
-     backend no devuelve Access-Control-Allow-Origin y el navegador corta la
-     llamada directa por CORS. El proxy hace la peticion desde el servidor de
-     desarrollo, asi que para el navegador queda como same-origin. */
-  sheetEndpoint: '/api/leaderboard',
+  /* URL del backend que sirve el ranking. Se le pega directo: si el navegador
+     corta la llamada por CORS ("Sin conexion" en pantalla y un error de
+     Access-Control-Allow-Origin en la consola), el arreglo va del lado del
+     backend, que tiene que mandar ese header y bajar el
+     crossOriginResourcePolicy de helmet a 'cross-origin'. */
+  sheetEndpoint: 'https://leaderboard-back.queplan.cl/leaderboard',
 
   /* true = la pantalla se llena con los participantes falsos de
      mock-sheet-data.json y no se le pega a sheetEndpoint. Sirve para QA de
