@@ -56,7 +56,6 @@ interface RankedRow {
   company: string;
   /** Cargo y empresa en una linea, que es como los muestra el listado. */
   subtitle: string;
-  initials: string;
   /** Medalla del puesto (vacia del cuarto en adelante). */
   medal: string;
   dados: number;
@@ -308,7 +307,6 @@ export class AppComponent {
         role,
         company,
         subtitle: [role, company].filter(Boolean).join(' · '),
-        initials: this.initialsOf(row['Nombre completo']),
         medal: AppComponent.medals[position] ?? '',
         dados,
         ruleta,
@@ -367,12 +365,4 @@ export class AppComponent {
     return Number.isFinite(total) && total > 0 ? total : dados + ruleta;
   }
 
-  private initialsOf(name: string): string {
-    return (name || '')
-      .trim()
-      .split(/\s+/)
-      .slice(0, 2)
-      .map((part) => part.charAt(0).toUpperCase())
-      .join('');
-  }
 }

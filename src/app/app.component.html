@@ -120,7 +120,6 @@ recortada a la altura del titulo. -->
               #{{ row.position }}
             }
           </span>
-          <span class="entry__avatar" aria-hidden="true">{{ row.initials }}</span>
           <div class="entry__identity">
             <p class="entry__name">
               <span class="entry__name-text">{{ row.name }}</span>
@@ -169,7 +168,6 @@ recortada a la altura del titulo. -->
         @for (ghost of skeletonRows; track $index) {
           <li class="ghost" [style.--i]="$index">
             <span class="ghost__block ghost__rank"></span>
-            <span class="ghost__block ghost__avatar"></span>
             <span class="ghost__identity">
               <span class="ghost__block ghost__name"></span>
               <span class="ghost__block ghost__company"></span>

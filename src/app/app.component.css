@@ -555,7 +555,7 @@
   --card-bg: var(--surface);
 
   display: grid;
-  grid-template-columns: 2.25rem 2.5rem minmax(0, 1fr) auto;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
   align-items: center;
   gap: clamp(0.75rem, 2vw, 1.25rem);
   padding: 0.85rem 1.15rem;
@@ -586,35 +586,6 @@
 .entry__medal {
   font-size: 1.125rem;
   line-height: 1;
-}
-
-.entry__avatar {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
-  font-family: "Zalando Sans SemiExpanded", sans-serif;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  color: var(--theme-white);
-  background: var(--ink);
-  border: 2px solid transparent;
-}
-
-/* El aro del avatar repite el metal del puesto: el color hace de medalla. */
-.entry--top-1 .entry__avatar {
-  border-color: var(--gold);
-}
-
-.entry--top-2 .entry__avatar {
-  border-color: var(--silver);
-}
-
-.entry--top-3 .entry__avatar {
-  border-color: var(--bronze);
 }
 
 .entry__identity {
@@ -859,7 +830,7 @@
 
 .ghost {
   display: grid;
-  grid-template-columns: 2.25rem 2.5rem minmax(0, 1fr) auto;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
   align-items: center;
   gap: clamp(0.75rem, 2vw, 1.25rem);
   padding: 0.85rem 1.15rem;
@@ -889,12 +860,6 @@
   width: 1.25rem;
   height: 0.75rem;
   margin: 0 auto;
-}
-
-.ghost__avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 50%;
 }
 
 .ghost__identity {
@@ -1479,14 +1444,9 @@
 @media (max-width: 720px) {
   .entry,
   .ghost {
-    grid-template-columns: 1.75rem 2.25rem minmax(0, 1fr) auto;
+    grid-template-columns: 1.75rem minmax(0, 1fr) auto;
     gap: 0.6rem;
     padding: 0.8rem 0.9rem;
-  }
-
-  .ghost__avatar {
-    width: 2.25rem;
-    height: 2.25rem;
   }
 
   .board__cols {
